@@ -1,0 +1,71 @@
+name: Build and Package Ghostty
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout This Repository
+        uses: actions/checkout@v4
+
+      - name: Checkout Ghostty
+        run: |
+          git clone --depth 1 https://github.com/ghostty-org/ghostty.git ghostty-src
+          cd ghostty-src
+          git submodule update --init --recursive
+
+      - name: Install Zig
+        run: |
+          ZIG_VERSION="0.13.0"
+          wget https://ziglang.org/download/${ZIG_VERSION}/zig-linux-x86_64-${ZIG_VERSION}.tar.xz
+          tar -xf zig-linux-x86_64-${ZIG_VERSION}.tar.xz
+          mv zig-linux-x86_64-${ZIG_VERSION} /opt/zig
+          echo "/opt/zig" >> $GITHUB_PATH
+          zig version
+
+      - name: Build Ghostty
+        run: |
+          cd ghostty-src
+          zig build -Drelease-fast
+
+      - name: Create DEB Package
+        run: |
+          APP_NAME="ghostty"
+          VERSION="1.1.2"
+          ARCH="amd64"
+
+          mkdir -p deb-pkg/DEBIAN
+          mkdir -p deb-pkg/usr/local/bin
+
+          # Copy binary to the package
+          cp ghostty-src/zig-out/bin/${APP_NAME} deb-pkg/usr/local/bin/
+
+          # Create control file
+          cat <<EOF > deb-pkg/DEBIAN/control
+          Package: ${APP_NAME}
+          Version: ${VERSION}
+          Section: utils
+          Priority: optional
+          Architecture: ${ARCH}
+          Maintainer: Diogo Ferreira <diogo@diogoferreira.pt>
+          Description: Ghostty
+          EOF
+
+          dpkg-deb --build deb-pkg
+          mv deb-pkg.deb ${APP_NAME}-${VERSION}_${ARCH}.deb
+
+      - name: Upload DEB Package
+        uses: actions/upload-artifact@v4
+        with:
+          name: deb-package
+          path: "*.deb"
+

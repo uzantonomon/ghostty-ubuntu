@@ -28,15 +28,15 @@ jobs:
           ZIG_VERSION="0.13.0"
           wget https://ziglang.org/download/${ZIG_VERSION}/zig-linux-x86_64-${ZIG_VERSION}.tar.xz
           tar -xf zig-linux-x86_64-${ZIG_VERSION}.tar.xz
-          mv zig-linux-x86_64-${ZIG_VERSION} /opt/zig
-          chmod +x /opt/zig
-          echo "/opt/zig" >> $GITHUB_PATH
-          /opt/zig version
+          mv zig-linux-x86_64-${ZIG_VERSION} /opt/zig/zig
+          chmod +x /opt/zig/zig
+          echo "/opt/zig/zig" >> $GITHUB_PATH
+          /opt/zig/zig version
 
       - name: Build Ghostty
         run: |
           cd ghostty-src
-          /opt/zig build -Drelease-fast
+          /opt/zig/zig build -Drelease-fast
 
       - name: Create DEB Package
         run: |

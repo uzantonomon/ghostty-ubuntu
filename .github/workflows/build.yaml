@@ -19,7 +19,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          sudo apt install libgtk-4-dev libadwaita-1-dev -y
+          sudo apt install libgtk-4-dev libadwaita-1-dev ca-certificates -y
 
       - name: Checkout Ghostty
         run: |

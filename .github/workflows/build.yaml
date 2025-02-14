@@ -17,6 +17,10 @@ jobs:
       - name: Checkout This Repository
         uses: actions/checkout@v4
 
+      - name: Install dependencies
+        run: |
+          apt install libgtk-4-dev libadwaita-1-dev git
+
       - name: Checkout Ghostty
         run: |
           git clone --depth 1 https://github.com/ghostty-org/ghostty.git ghostty-src

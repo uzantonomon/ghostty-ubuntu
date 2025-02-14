@@ -36,7 +36,7 @@ jobs:
       - name: Build Ghostty
         run: |
           cd ghostty-src
-          zig build -Drelease-fast
+          /opt/zig build -Drelease-fast
 
       - name: Create DEB Package
         run: |
